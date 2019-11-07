@@ -23,14 +23,14 @@ if __name__ == '__main__':
 
   classfier_files = [ 'iris.data', 'sonar.all-data', 'glass.data' ]
   classfier_params = [( ',', None, None), ( ',',None, None), ( ',', None, 0) ]
-  regressor_files = [ 'airfoil_self_noise.dat', 'winequality-red.csv' 'winequality-white.csv' ]
+  regressor_files = [ 'airfoil_self_noise.dat', 'winequality-red.csv','winequality-white.csv' ]
   regressor_params = [ (r'\t', None, None), (';', 0, None), ( ';', 0, None) ]
 
   result = pd.DataFrame(
     columns=[ 'target', 'function' ] + [ m[0] for m in models],
     index=range(len( classfier_files + regressor_files ) * 2))
 
-  ncal = 0
+  ncol = 0
   for i, (c,p) in enumerate( zip( classfier_files, classfier_params) ):
     # read file
     df = pd.read_csv( c, sep=p[0], header=p[1], index_col=p[2])
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     ## write algorithm score
     for l, c_m, r_m in models:
       kf = KFold( n_splits=5, random_state=1, shuffle=True)
-      s = cross_validate( c_m, x, y.argmax( axis=1 ), cv=kf, scoring=( 'f1_wighted' , 'accuracy'))
+      s = cross_validate( c_m, x, y.argmax( axis=1 ), cv=kf, scoring=( 'f1_weighted' , 'accuracy'))
       result.loc[ ncol, l ] = np.mean( s[ 'test_f1_weighted' ] )
       result.loc[ ncol + 1, l ] = np.mean( s[ 'test_accuracy' ] )
 
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     # read file
     df = pd.read_csv( c, sep=p[0], header=p[1], index_col=p[2])
     x = df[ df.columns[ :-1 ] ].values
-    x = df[ df.columns[ :-1 ] ].values.reshape( (-1, ) )
+    y = df[ df.columns[ -1 ] ].values.reshape( (-1, ) )
 
     # create scores
     result.loc[ncol, 'target'] = re.split( r'[._]', c )[0]
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     ## write algorithm score
     for l, c_m, r_m in models:
       kf = KFold( n_splits=5, random_state=1, shuffle=True)
-      s = cross_validate( r_m, x, y.argmax( axis=1 ), cv=kf, scoring=( 'r2', 'neg_mean_squared_error' ))
+      s = cross_validate( r_m, x, y, cv=kf, scoring=( 'r2', 'neg_mean_squared_error' ))
       result.loc[ ncol, l ] = np.mean( s[ 'test_r2' ] )
       result.loc[ ncol + 1, l ] = np.mean( s[ 'test_neg_mean_squared_error' ] )
 
