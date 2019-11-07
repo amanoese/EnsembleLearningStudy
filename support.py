@@ -17,8 +17,8 @@ def get_base_args():
   ps = argparse.ArgumentParser(description = 'ML Test')
   ps.add_argument('--input', '-i', help='Traning file')
   ps.add_argument('--separatar','-s',default=',',help='CSV separator')
-  ps.add_argument('--header','-e',type=int, dafault=None, help='CSV header')
-  ps.add_argument('--indexcol','-x',type=int, dafault=None, help='CSV index_cal')
+  ps.add_argument('--header','-e',type=int, default=None, help='CSV header')
+  ps.add_argument('--indexcol','-x',type=int, default=None, help='CSV index_cal')
   ps.add_argument('--regression','-r',action='store_true',help='Regression')
   ps.add_argument('--crossvalidate','-c',action='store_true',help='Use Cross Validation')
   return ps
@@ -37,8 +37,8 @@ def report_classfier( plf, x, y, clz, cv=True):
     z = z.argmax( axis=1 )
     y = y.argmax( axis=1 )
     with warnings.catch_warnings():
-      warnings.simplefilter('ignore', categorey=UndefinedMetricWarning)
-      rp = classfication_report(y, z, target_names=clz)
+      warnings.simplefilter('ignore', category=UndefinedMetricWarning)
+      rp = classification_report(y, z, target_names=clz)
       print('Train Score:')
       print( rp )
   else:
@@ -46,7 +46,7 @@ def report_classfier( plf, x, y, clz, cv=True):
     f1 = []
     pr = []
     n = []
-    for train_indx,test_index in kf.split(x):
+    for train_index,test_index in kf.split(x):
       x_train, x_test = x[train_index], x[test_index]
       y_train, y_test = y[train_index], y[test_index]
 
@@ -54,7 +54,7 @@ def report_classfier( plf, x, y, clz, cv=True):
 
       z = plf.predict(x_test)
       z = z.argmax(axis=1)
-      y_test = z.argmax(axis=1)
+      y_test = y_test.argmax(axis=1)
 
       f1.append(f1_score(y_test, z, average='weighted'))
       pr.append(accuracy_score(y_test, z))
