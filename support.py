@@ -65,7 +65,7 @@ def report_classfier( plf, x, y, clz, cv=True):
 
 # linear regression
 def report_regressor(plf, x, y, cv=True):
-  from sklearn.metrics import r2_score, explained_varianse_score, mean_absolute_error, mean_squared_error
+  from sklearn.metrics import r2_score, explained_variance_score, mean_absolute_error, mean_squared_error
   from sklearn.model_selection import KFold
 
   if not cv:
@@ -80,7 +80,7 @@ def report_regressor(plf, x, y, cv=True):
     rp = r2_score( y, z)
     print('  R2 Score: %f'%rp)
 
-    rp = explained_varianse_score( y, z)
+    rp = explained_variance_score( y, z)
     print('  Explained Variance Score: %f'%rp)
 
     rp = mean_absolute_error( y, z)
